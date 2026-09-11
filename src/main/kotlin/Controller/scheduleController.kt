@@ -19,7 +19,7 @@ class PersonController(private val repository: PersonRepository) {
                 person
             )
         } catch (e: NumberFormatException){
-            return Reply<Person>( 404,"Erro ao cadastrar numero | Digite um numero de telefone sem acentuação")
+            return Reply<Person>( 404,"Erro ao cadastrar numero | Digite um numero de telefone valido e sem pontos")
         } catch (e: Exception){
             return Reply<Person>( 500,"Erro inesperado")
         }
@@ -39,32 +39,43 @@ class PersonController(private val repository: PersonRepository) {
         }
     }
 
-    fun toFind(name: String): Reply<Person> {
+    fun toFind(name: String): Reply<List<Person>> {
         try {
             val person = repository.find(name)
 
-            return Reply<Person>(
-                200,
-                "Usuarios encontrado com sucesso",
-                person
-            )
-        } catch (e: Exception){
-            return Reply<Person>(500, "Erro inesperado")
-        }
+            if(person.isNotEmpty()){
+                return Reply<List<Person>>(
+                    200,
+                    "Resultados encontrado para essa pesquisa",
+                    person
+                )
+            }
 
+            return Reply(404, "Usuario não encontrado")
+        } catch (e: Exception){
+            return Reply(500, "Erro inesperado")
+        }
     }
 
     fun toDelete(name: String): Reply<Person> {
         try {
             val person = repository.delete(name)
 
-            return Reply<Person>(
-                200,
-                "Usuarios deletado com sucesso",
-                person
-            )
+            if(person != null){
+                return Reply<Person>(
+                    200,
+                    "Usuarios deletado com sucesso",
+                    person
+                )
+            }
+
+            return Reply<Person>(404, "Usuario não encontrado")
         } catch (e: Exception){
             return Reply<Person>(500, "Erro inesperado")
         }
+    }
+
+    fun getSize(): Int{
+        return repository.listAll().size
     }
 }
