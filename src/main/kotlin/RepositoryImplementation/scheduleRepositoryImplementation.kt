@@ -12,9 +12,7 @@ class PersonRepositortImp : PersonRepository {
     }
 
     override fun find(name: String): List<Person> {
-        val person = people.filter { it.name.equals(name, ignoreCase = true) };
-        if (person.isNotEmpty()) return person;
-        return people.filter { it.name.startsWith(name.first(), ignoreCase = true)}
+        return people.filter { it.name.equals(name, ignoreCase = true) };
     }
 
     override fun delete(name: String): Person? {
