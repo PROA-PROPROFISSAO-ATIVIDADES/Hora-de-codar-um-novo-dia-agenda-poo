@@ -4,7 +4,7 @@ import Controller.PersonController
 import kotlin.system.exitProcess
 
 class PersonView(private val controller: PersonController){
-    val options = arrayListOf<String>("Criar", "Listar", "Buscar", "Deletar", "Sair")
+    val options = arrayListOf<String>("Adicionar", "Listar", "Buscar", "Remover", "Sair")
 
     fun showOptions(){
         options.forEachIndexed { index, string ->
@@ -15,16 +15,19 @@ class PersonView(private val controller: PersonController){
     fun showMenu(){
         while(true){
             showOptions()
-            println("Digite um numero de 1 a ${options.size}: ")
+            println("Digite um comando (ADICIONAR, LISTAR, BUSCAR, REMOVER, SAIR): ")
             val choice = readln()
 
             when {
-                choice.toIntOrNull() == 1 -> showToCreate()
-                choice.toIntOrNull() == 2 -> showToList()
-                choice.toIntOrNull() == 3 -> showToFilter()
-                choice.toIntOrNull() == 4 -> showToDelete()
-                choice.toIntOrNull() == 5 -> toLeave()
-                else -> println("Opção invalida")
+                choice.uppercase() == "ADICIONAR" -> showToCreate()
+                choice.uppercase() == "LISTAR" -> showToList()
+                choice.uppercase() == "BUSCAR" -> showToFilter()
+                choice.uppercase() == "REMOVER" -> showToDelete()
+                choice.uppercase() == "SAIR" -> toLeave()
+                else -> {
+                    println("Opção invalida! Comandos possiveis:")
+                    println(options)
+                }
             }
         }
     }
@@ -33,26 +36,34 @@ class PersonView(private val controller: PersonController){
         toClean()
         println("Digite o nome: "); val name = readln()
         println("Digite o numero de telefone: "); val phoneNumber = readln()
-        println(controller.toCreate(name, phoneNumber))
+        println(controller.toCreate(name, phoneNumber).message)
     }
 
     private fun showToList(){
         toClean()
-        controller.toList().item?.forEach { println(it) }
+        val results = controller.toList()
+        if (results.item.isNullOrEmpty()) {
+            println(results.message)
+        } else {
+            results.item.forEach { println(it) }
+        }
     }
 
     private fun showToDelete(){
         toClean()
         println("Digite o nome: "); val name = readln()
-        println(controller.toDelete(name))
+        println(controller.toDelete(name).message)
     }
 
     private fun showToFilter(){
         toClean()
         println("Digite o nome: "); val name = readln()
         val results = controller.toFind(name)
-        println("${results.message}: \n")
-        println(results.item)
+        if (results.item.isNullOrEmpty()) {
+            println(results.message)
+        } else {
+            results.item.forEach { println("Telefone: ${it.phoneNumber}") }
+        }
     }
 
     private fun toLeave(){

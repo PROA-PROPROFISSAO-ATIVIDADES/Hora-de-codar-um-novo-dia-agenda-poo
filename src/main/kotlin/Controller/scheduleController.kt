@@ -9,18 +9,15 @@ class PersonController(private val repository: PersonRepository) {
         require(name.isNotBlank())
 
         try {
-            val phoneNumberInt = phoneNumber.toLong()
-            val person = Person(name, phoneNumberInt)
+            val person = Person(name, phoneNumber)
             repository.save(person)
 
             return Reply<Person>(
                 201,
-                "Usuario cadastrado com sucesso",
+                "Contato adicionado!",
                 person
             )
-        } catch (e: NumberFormatException){
-            return Reply<Person>( 404,"Erro ao cadastrar numero | Digite um numero de telefone valido e sem pontos")
-        } catch (e: Exception){
+        } catch (_: Exception){
             return Reply<Person>( 500,"Erro inesperado")
         }
     }
@@ -29,12 +26,19 @@ class PersonController(private val repository: PersonRepository) {
         try {
             val list = repository.listAll()
 
+            if(list.isEmpty()){
+                return Reply(
+                    status = 404,
+                    "Nenhum contato cadastrado."
+                )
+            }
+
             return Reply<List<Person>>(
                 200,
                 "Lista de usuarios encontrada com sucesso",
                 list
             )
-        } catch (e: Exception){
+        } catch (_: Exception){
             return Reply<List<Person>>( 500,"Erro inesperado")
         }
     }
@@ -51,8 +55,8 @@ class PersonController(private val repository: PersonRepository) {
                 )
             }
 
-            return Reply(404, "Usuario não encontrado")
-        } catch (e: Exception){
+            return Reply(404, "Contato não encontrado")
+        } catch (_: Exception){
             return Reply(500, "Erro inesperado")
         }
     }
@@ -64,13 +68,13 @@ class PersonController(private val repository: PersonRepository) {
             if(person != null){
                 return Reply<Person>(
                     200,
-                    "Usuarios deletado com sucesso",
+                    "Contato removido!",
                     person
                 )
             }
 
-            return Reply<Person>(404, "Usuario não encontrado")
-        } catch (e: Exception){
+            return Reply<Person>(404, "Contato não encontrado")
+        } catch (_: Exception){
             return Reply<Person>(500, "Erro inesperado")
         }
     }
